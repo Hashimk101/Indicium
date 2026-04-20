@@ -1,10 +1,16 @@
-# --- IntelliJ IDEA Specific ---
+# --- IntelliJ IDEA ---
 .idea/**
-# Un-ignore the project structure so friends don't have to "Import" from scratch
+# Explicitly un-ignore the "soul" of the project structure
 !.idea/modules.xml
-!.idea/runConfigurations/
 !.idea/compiler.xml
 !.idea/misc.xml
+!.idea/vcs.xml
+
+# Ignore all other IDE metadata/temp files (fixes the Copilot/Agent XML issue)
+.idea/*.xml
+.idea/libraries/
+.idea/shelf/
+.idea/workspace.xml
 *.iml
 *.iws
 *.ipr
@@ -13,16 +19,16 @@
 out/
 target/
 build/
+bin/
 
 # --- OS Specific ---
 .DS_Store
 Thumbs.db
+desktop.ini
 
-# --- Log Files ---
-*.log
-
-# --- Forensic/Data Specific (Indicium) ---
-# Prevents actual evidence or large database dumps from being pushed
+# --- Indicium Specific (Database & Logs) ---
 *.db
 *.sql
+*.log
 /evidence_storage/
+config.properties
