@@ -1,0 +1,28 @@
+# --- IntelliJ IDEA Specific ---
+.idea/**
+# Un-ignore the project structure so friends don't have to "Import" from scratch
+!.idea/modules.xml
+!.idea/runConfigurations/
+!.idea/compiler.xml
+!.idea/misc.xml
+*.iml
+*.iws
+*.ipr
+
+# --- Build & Output ---
+out/
+target/
+build/
+
+# --- OS Specific ---
+.DS_Store
+Thumbs.db
+
+# --- Log Files ---
+*.log
+
+# --- Forensic/Data Specific (Indicium) ---
+# Prevents actual evidence or large database dumps from being pushed
+*.db
+*.sql
+/evidence_storage/
