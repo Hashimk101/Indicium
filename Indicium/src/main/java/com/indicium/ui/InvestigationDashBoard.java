@@ -1,4 +1,5 @@
 package com.indicium.ui;
 
-public class InvestigationDashBoard {
+public class InvestigationDashBoard
+{
 }
