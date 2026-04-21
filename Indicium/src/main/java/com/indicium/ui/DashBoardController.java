@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 
-public class DashBoardController extends BorderPane {  // ✅ extends BorderPane
+public class DashBoardController extends BorderPane {  //  extends BorderPane
 
     // ── Top nav ──
     @FXML private Button navDashboard;
@@ -42,7 +42,7 @@ public class DashBoardController extends BorderPane {  // ✅ extends BorderPane
     private List<Button> topNavButtons;
     private List<Button> sideNavButtons;
 
-    // ✅ Constructor handles FXML loading
+    //  Constructor handles FXML loading
     public DashBoardController() {
         URL fxmlUrl = getClass().getResource("/com/indicium/ui/DashBoard.fxml");
 
@@ -109,7 +109,7 @@ public class DashBoardController extends BorderPane {  // ✅ extends BorderPane
         statCases.setText("12");
         statEvidence.setText("47");
         statTimeline.setText("8");
-        statAudit.setText("134");
+        statAudit.setText("67");
     }
 
     public void setUsername(String name) {

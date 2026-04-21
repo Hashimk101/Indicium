@@ -23,8 +23,8 @@ public class InvestigationDashBoard extends Application {
         // Load it
         javafx.scene.layout.BorderPane root = loader.load();
 
-        // Optional: pass the logged-in username
-        controller.setUsername("John");
+        // Optional: pass the logged-in username TO BE DONE MY DB SHI
+        controller.setUsername("BEE");
 
         // Build the scene
         Scene scene = new Scene(root, 1000, 650);

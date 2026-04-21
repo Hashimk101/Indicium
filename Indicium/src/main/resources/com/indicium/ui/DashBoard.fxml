@@ -11,12 +11,7 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<fx:root type="BorderPane"
-         prefHeight="650.0"
-         prefWidth="1000.0"
-         stylesheets="@Dashboard.css"
-         xmlns="http://javafx.com/javafx/25"
-         xmlns:fx="http://javafx.com/fxml/1">
+<fx:root prefHeight="650.0" prefWidth="1000.0" stylesheets="@Dashboard.css" type="BorderPane" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1">
 
 
     <!-- ═══════════════════════════ TOP NAV ═══════════════════════════ -->
@@ -27,7 +22,7 @@
 
                 <!-- Logo icon -->
                 <ImageView fx:id="logoIcon" fitHeight="36.0" fitWidth="36.0" pickOnBounds="true" preserveRatio="true">
-                    <Image url="@Assets/icons8-menu-100.png"/>
+                    <Image url="@Assets/icons8-menu-100.png" />
                 </ImageView>
 
                 <!-- App name -->
@@ -41,15 +36,15 @@
                 <!-- Top nav buttons -->
                 <Button fx:id="navDashboard" onAction="#handleNavDashboard" styleClass="top-nav-btn" text="Dashboard" />
                 <Button fx:id="navNotes" onAction="#handleNavNotes" styleClass="top-nav-btn" text="Notes" />
-                <Button fx:id="navVideos" onAction="#handleNavVideos" styleClass="top-nav-btn" text="Videos" />
+                <Button fx:id="navVideos" onAction="#handleNavVideos" styleClass="top-nav-btn" text="Search" />
                 <Button fx:id="navTools" onAction="#handleNavTools" styleClass="top-nav-btn" text="Tools" />
-                <Button fx:id="navForum" onAction="#handleNavForum" styleClass="top-nav-btn" text="Forum" />
+                <Button fx:id="navForum" onAction="#handleNavForum" styleClass="top-nav-btn" text="Notifications" />
 
                 <!-- User avatar -->
                 <StackPane styleClass="avatar-circle">
-                    <Label styleClass="avatar-label" text="J" />
+                    <Label styleClass="avatar-label" text="B" />
                 </StackPane>
-
+                <!-- TODO: Add DB call for user first name -->
             </children>
         </HBox>
     </top>
