@@ -53,6 +53,9 @@ public class Evidence {
         this.setDataFromFile(file);
     }
 
+    public Evidence(int i, File file) {
+    }
+
     public void setDataFromFile(File file)
     {
         if (file == null || !file.exists())

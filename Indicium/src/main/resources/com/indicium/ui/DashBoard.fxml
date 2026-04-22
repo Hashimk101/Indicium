@@ -22,11 +22,11 @@
 
                 <!-- Logo icon -->
                 <ImageView fx:id="logoIcon" fitHeight="36.0" fitWidth="36.0" pickOnBounds="true" preserveRatio="true">
-                    <Image url="@Assets/icons8-menu-100.png" />
+                    <Image url="@Assets/icons8-menu-100%20(1).png" />
                 </ImageView>
 
                 <!-- App name -->
-                <Label styleClass="app-title" text="INDICIUM">
+                <Label prefHeight="24.0" prefWidth="93.0" styleClass="app-title" text="INDICIUM">
                     <HBox.margin><Insets left="6.0" /></HBox.margin>
                 </Label>
 
@@ -38,7 +38,14 @@
                 <Button fx:id="navNotes" onAction="#handleNavNotes" styleClass="top-nav-btn" text="Notes" />
                 <Button fx:id="navVideos" onAction="#handleNavVideos" styleClass="top-nav-btn" text="Search" />
                 <Button fx:id="navTools" onAction="#handleNavTools" styleClass="top-nav-btn" text="Tools" />
-                <Button fx:id="navForum" onAction="#handleNavForum" styleClass="top-nav-btn" text="Notifications" />
+                <Button fx:id="navForum" onAction="#handleNavForum" styleClass="top-nav-btn" text="Notifications">
+               <graphic>
+                  <ImageView fitHeight="30.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@Assets/icons8-notification-100%20(1).png" />
+                     </image>
+                  </ImageView>
+               </graphic></Button>
 
                 <!-- User avatar -->
                 <StackPane styleClass="avatar-circle">
@@ -113,7 +120,7 @@
 
                     <Button fx:id="sideSettings" onAction="#handleSideSettings" styleClass="side-nav-btn" text="Settings">
                         <graphic>
-                            <ImageView fitHeight="18.0" fitWidth="18.0" preserveRatio="true">
+                            <ImageView fitHeight="45.0" fitWidth="30.0"  preserveRatio="true" styleClass="side-nav-icon">
                                 <image><Image url="@Assets/icons8-settings-100.png" /></image>
                             </ImageView>
                         </graphic>
@@ -121,7 +128,7 @@
 
                     <Button fx:id="sideIntegrity" onAction="#handleSideIntegrity" styleClass="side-nav-btn" text="Integrity Manager">
                         <graphic>
-                            <ImageView fitHeight="18.0" fitWidth="18.0" preserveRatio="true">
+                            <ImageView fitHeight="45.0" fitWidth="30.0"  preserveRatio="true" styleClass="side-nav-icon">
                                 <image><Image url="@Assets/icons8-integrity-100.png" /></image>
                             </ImageView>
                         </graphic>
@@ -129,7 +136,7 @@
 
                     <Button fx:id="sideUserMgr" onAction="#handleSideUserManager" styleClass="side-nav-btn" text="User Manager">
                         <graphic>
-                            <ImageView fitHeight="18.0" fitWidth="18.0" preserveRatio="true">
+                            <ImageView fitHeight="45.0" fitWidth="30.0"  preserveRatio="true" styleClass="side-nav-icon">
                                 <image><Image url="@Assets/icons8-accessibility-tools-100.png" /></image>
                             </ImageView>
                         </graphic>
