@@ -52,7 +52,7 @@ public class EvidenceManager
 
         // Step 6: Save to repository (UC5 - AddEvidence)
         EvidenceRepo.add(evidence);
-
+        
         // Step 7: Log the event (UC5 - AddEvidenceLog(fileHash, Case))
         logEvidenceEvent("INGEST", evidence.getEvidenceID(), caseID, fileHash);
 
