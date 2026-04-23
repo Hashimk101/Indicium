@@ -26,7 +26,7 @@ public class EvidenceManager
         }
 
         // Step 1: Generate hash for the file (UC5 - HashGenerator)
-       String fileHash = generateHash(file);
+        String fileHash = generateHash(file);
         if (fileHash == null)
         {
             System.out.println("[EvidenceManager] ERROR: Hash generation failed for: " + file.getName());
@@ -34,11 +34,11 @@ public class EvidenceManager
         }
 
         // Step 2: Check for duplicate (UC5 - checkDuplicate)
-       if (isDuplicate(fileHash, caseID))
-       {
-           System.out.println("[EvidenceManager] DUPLICATE DETECTED: " + file.getName() + " already exists in case " + caseID);
-           return null;
-       }
+        if (isDuplicate(fileHash, caseID))
+        {
+            System.out.println("[EvidenceManager] DUPLICATE DETECTED: " + file.getName() + " already exists in case " + caseID);
+            return null;
+        }
 
         // Step 3: Create evidence object (UC5 - <<create>> evidence:Evidence)
         Evidence evidence = new Evidence(file, fileHash);
@@ -50,10 +50,10 @@ public class EvidenceManager
         // Step 5: Lock evidence after ingestion (UC5 - evidence is locked, cannot be edited)
         evidence.lock();
 
-//        // Step 6: Save to repository (UC5 - AddEvidence)
+        // Step 6: Save to repository (UC5 - AddEvidence)
         EvidenceRepo.add(evidence);
-//
-//        // Step 7: Log the event (UC5 - AddEvidenceLog(fileHash, Case))
+        
+        // Step 7: Log the event (UC5 - AddEvidenceLog(fileHash, Case))
         logEvidenceEvent("INGEST", evidence.getEvidenceID(), caseID, fileHash);
 
         System.out.println("[EvidenceManager] Evidence ingested successfully: ID=" + evidence.getEvidenceID());
