@@ -1,6 +1,6 @@
 package com.indicium.models;
 
-//public class Investigator exte
-//{
-//
-//}
+public class Investigator extends SystemUser
+{
+
+}

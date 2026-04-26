@@ -5,10 +5,10 @@ import com.indicium.models.UserRole;
 public class Admin extends SystemUser
 {
     String adminToken;
-    public Admin(int userID, String email, String credentials, String adminToken)
+    public Admin(int userID, String name, String email, String credentials, String adminToken)
     {
         this.adminToken = adminToken;
-        super(userID, email, credentials, UserRole.ADMIN);
+        super(userID, name, email, credentials, UserRole.ADMIN);
     }
 
 
