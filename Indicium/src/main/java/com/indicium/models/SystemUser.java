@@ -6,12 +6,14 @@ public abstract class SystemUser
     private UserAuth authentication;
 
     protected int userID;
+    protected String name;
     protected String email;
     protected String credentials;
     protected UserRole role;
 
-    public SystemUser(int userID, String email, String credentials, UserRole role)
+    public SystemUser(int userID, String name, String email, String credentials, UserRole role)
     {
+        this.name = name;
         this.userID = userID;
         this.email = email;
         this.credentials = credentials;

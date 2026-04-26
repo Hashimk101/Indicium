@@ -4,7 +4,7 @@ import com.indicium.models.Case;
 import com.indicium.services.AuditLog;
 import com.indicium.services.HashGenerator;
 import com.indicium.repository.EvidenceRepo;
-import com.indicium.ui.EvidenceDashBoard;
+import com.indicium.ui.EvidenceDashBoardController;
 
 import java.io.File;
 import java.time.LocalDateTime;
@@ -22,7 +22,7 @@ public class EvidenceManager
         }
 
         // Step 1: Generate hash for the file (UC5 - HashGenerator)
-        String fileHash = generateHash(file);
+        String fileHash = HashGenerator.generateSHA256(file.getPath());
         if (fileHash == null)
         {
             System.out.println("[EvidenceManager] ERROR: Hash generation failed for: " + file.getName());
@@ -51,7 +51,7 @@ public class EvidenceManager
         EvidenceRepo.add(evidence, caseID);
 
         // Step 7: Log the event (UC5 - AddEvidenceLog(fileHash, Case))
-        logEvidenceEvent("INGEST", evidence.getEvidenceID(), caseID, fileHash);
+        AuditLog.logEvidenceEvent("INGEST", evidence.getEvidenceID(), caseID, fileHash);
 
         System.out.println("[EvidenceManager] Evidence ingested successfully: ID=" + evidence.getEvidenceID());
         return evidence;
@@ -70,7 +70,7 @@ public class EvidenceManager
         File file = evidence.getFile();
         String hash = evidence.getDigitalFingerprint();
 
-        if (HashGenerator.verifyHash(evidence, hash) == false)
+        if (!HashGenerator.verifyHash(file, hash))
         {
             System.out.println("[EvidenceManager] ERROR: Hash not verified.");
             return;
@@ -79,12 +79,12 @@ public class EvidenceManager
         if (actionType.equals("View"))
         {
             AuditLog.createLog("View", evidenceID, userID);
-            EvidenceDashBoard.openOnlinePlayer(file);
+            EvidenceDashBoardController.openOnlinePlayer(file);
         }
         else if (actionType.equals("Download"))
         {
             AuditLog.createLog("Download", evidenceID);
-            EvidenceDashBoard.askForConfirmation();
+            EvidenceDashBoardController.askForConfirmation();
         }
     }
 }
