@@ -176,8 +176,7 @@ public class DashBoardController extends BorderPane {
         navigateTo(new TimelineController());
     }
 
-    // Navigate to timeline pre-loaded with a specific case
-    // Called from CaseDashBoardController overflow menu
+
     public void navigateToTimeline(String caseId) {
         setActiveSideNav(sideTimeline);
         navigateTo(new TimelineController(caseId));
@@ -193,7 +192,13 @@ public class DashBoardController extends BorderPane {
         navigateTo(new AuditLogController());
 
        }
-    @FXML private void handleSideReport()      { setActiveSideNav(sideReport);    /* TODO */ }
+    @FXML private void handleSideReport()
+    {
+        setActiveSideNav(sideReport);
+        navigateTo(new ReportGenController());
+
+
+    }
     @FXML private void handleSideSettings()    { setActiveSideNav(sideSettings);  /* TODO */ }
     @FXML private void handleSideIntegrity()   { setActiveSideNav(sideIntegrity); /* TODO */ }
     @FXML private void handleSideUserManager() { setActiveSideNav(sideUserMgr);   /* TODO */ }

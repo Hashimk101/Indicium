@@ -36,9 +36,9 @@
 
             <!-- Top nav buttons -->
             <Button fx:id="navDashboard" onAction="#handleNavDashboard" styleClass="top-nav-btn" text="Dashboard" />
-            <Button fx:id="navNotes" onAction="#handleNavNotes" styleClass="top-nav-btn" text="Notes" />
+            <Button fx:id="navNotes" onAction="#handleNavNotes" styleClass="top-nav-btn" text="Tools" />
             <Button fx:id="navVideos" onAction="#handleNavVideos" styleClass="top-nav-btn" text="Search" />
-            <Button fx:id="navTools" onAction="#handleNavTools" styleClass="top-nav-btn" text="Tools" />
+            <Button fx:id="navTools" onAction="#handleNavTools" styleClass="top-nav-btn" text="Notes" />
             <Button fx:id="navForum" onAction="#handleNavForum" styleClass="top-nav-btn">
                 <graphic>
                     <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
