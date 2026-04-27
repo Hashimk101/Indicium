@@ -1,4 +1,5 @@
 package com.indicium.services;
 
-public class AuditLog {
+public class AuditLog
+{
 }
