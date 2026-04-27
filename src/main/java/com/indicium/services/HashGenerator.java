@@ -10,7 +10,7 @@ import java.security.NoSuchAlgorithmException;
 
 public class HashGenerator {
 
-    public String generateSHA256(String filePath) {
+    public static String generateSHA256(String filePath) {
         try (FileInputStream fis = new FileInputStream(filePath)) {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
             byte[] buffer = new byte[8192];
@@ -27,7 +27,7 @@ public class HashGenerator {
     }
 
     // Helper method to keep the main logic clean
-    private String bytesToHex(byte[] hash) {
+    private static String bytesToHex(byte[] hash) {
         StringBuilder hexString = new StringBuilder(2 * hash.length);
         for (byte b : hash) {
             String hex = Integer.toHexString(0xff & b);
@@ -37,7 +37,7 @@ public class HashGenerator {
         return hexString.toString();
     }
 
-    public boolean verifyHash(File evidenceFile, String originalHash) {
+    public static boolean verifyHash(File evidenceFile, String originalHash) {
         String computedHash = generateSHA256(evidenceFile.getAbsolutePath());
         return computedHash != null && computedHash.equalsIgnoreCase(originalHash);
     }
