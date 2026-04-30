@@ -1,5 +1,6 @@
 package com.indicium.models;
 
+import com.indicium.services.HashGenerator;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +23,7 @@ public class Evidence
     File evidenceFile;
     EvidenceStatus status; // verified, discarded, archived, collected
     boolean fileExists;
+    String hash;
 
     // --- Constructors ---
     public Evidence()
@@ -36,6 +38,7 @@ public class Evidence
         this.isLocked = false;
         this.digitalFingerprint = null;
         this.setDataFromFile(file);
+        this.hash = this.computeHash();
     }
     public Evidence(File file, String fingerprint)
     {
@@ -45,6 +48,7 @@ public class Evidence
         this.evidenceID = idsCount++;
         this.isLocked = false;
         this.setDataFromFile(file);
+        this.hash = this.computeHash();
     }
 
 
@@ -79,6 +83,7 @@ public class Evidence
         this.evidenceFile = null;
         this.status = null;
         fileExists = false;
+        this.hash = null;
     }
 
     // used by admin to lock evidence
@@ -95,6 +100,10 @@ public class Evidence
      * Returns true if the file is intact, false if tampered.
      */
 
+    private String computeHash()
+    {
+        return HashGenerator.generateSHA256(this.filePath);
+    }
     public boolean verifyIntegrity(String hash)
     {
         if (this.digitalFingerprint == null || hash == null) {
@@ -118,28 +127,32 @@ public class Evidence
     // --- Getters ---
 
     // UC 7
-    public File getFile() { return evidenceFile; }
+    public File getFile() { return this.evidenceFile; }
 
     public int getEvidenceID()
     {
-        return evidenceID;
+        return this.evidenceID;
     }
 
     public String getFilePath() {
-        return filePath;
+        return this.filePath;
     }
 
     public String getDigitalFingerprint() {
-        return digitalFingerprint;
+        return this.digitalFingerprint;
     }
 
-    public boolean isLocked() { return isLocked; }
+    public boolean isLocked() { return this.isLocked; }
 
-    public long getSize() { return size; }
+    public long getSize() { return this.size; }
 
-    public String getType() { return type; }
+    public String getType() { return this.type; }
 
-    public List<Integer> linkedCaseIDs() { return caseIDs; }
+    public List<Integer> linkedCaseIDs() { return this.caseIDs; }
+
+    public String getHash() { return this.hash; }
+
+    public String getName() { return this.name; }
 
     // --- Setters ---
 
