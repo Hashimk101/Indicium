@@ -2,7 +2,9 @@ package com.indicium.models;
 
 import com.indicium.repository.CaseRepository;
 import com.indicium.services.AccessManager;
-
+import com.indicium.models.Evidence;
+import com.indicium.models.CaseStatus;
+import com.indicium.models.TimeLineEvent;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
@@ -16,7 +18,6 @@ public class Case {
     // Evidence List
     private ArrayList<Evidence> evidenceList;
     private ArrayList<TimeLineEvent> timeLineEventsList;
-
 
     public int getCaseID() {return caseID;}
     //public void setCaseID(int caseID) {this.caseID = caseID;}
