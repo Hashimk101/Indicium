@@ -20,7 +20,7 @@ public class BulkImporter
     {
         this.selectSourceFolder(sourcePath, targetCaseId);
 
-        this.confirmImport(userID);
+//        this.confirmImport(userID);
     }
 
     public void selectImportBulkData()
@@ -64,12 +64,12 @@ public class BulkImporter
         }
     }
 
-    public String confirmImport(int userID)
-    {
-        int count = this.pendingImportBuffer.size();
-
-        String report = AuditLog.record("BulkImportEvent", userID, count);
-
-        return report;
-    }
+//    public String confirmImport(int userID)
+//    {
+//        int count = this.pendingImportBuffer.size();
+//
+//        String report = AuditLog.record("BulkImportEvent", userID, count);
+//
+//        return report;
+//    }
 }

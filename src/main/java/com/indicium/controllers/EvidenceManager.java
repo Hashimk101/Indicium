@@ -13,6 +13,7 @@ import com.indicium.models.EvidenceStatus;
 
 public class EvidenceManager
 {
+    AuditLog auditLog = new AuditLog();
     public Evidence ingestEvidence(int caseID, String caseTitle, File file)
     {
         if (file == null || !file.exists())
@@ -52,7 +53,7 @@ public class EvidenceManager
         EvidenceRepo.add(evidence, caseID);
 
         // Step 7: Log the event (UC5 - AddEvidenceLog(fileHash, Case))
-        AudtLog.logEvidenceEvent("INGEST", evidence.getEvidenceID(), caseID, fileHash);
+//        auditLog.logEvidenceEvent("INGEST", evidence.getEvidenceID(), caseID, fileHash);
 
         System.out.println("[EvidenceManager] Evidence ingested successfully: ID=" + evidence.getEvidenceID());
         return evidence;

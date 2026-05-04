@@ -74,18 +74,18 @@ public class Case {
     }
 
     public boolean verifyStandardViewingPrivileges(int investigatorID){
-       if (AccessManager.isLockDownActive()){
-           System.out.println("[SECURITY] Access Denied. LockDown is Active.");
-           return false;
-       }
+//       if (AccessManager.isLockDownActive()){
+//           System.out.println("[SECURITY] Access Denied. LockDown is Active.");
+//           return false;
+//       }
 
         // if case is archived, standard investigators cannot view it
         if(this.status == CaseStatus.ARCHIVED){
             System.out.println("[SECURITY] Access Denied. Case is Archived.");
             return false;
         }
-
-       return CaseRepository.isUserAssignedToCase(investigatorID, this.caseID);
+        return false; //STUB FIX IT
+//       return CaseRepository.isUserAssignedToCase(investigatorID, this.caseID);
     }
 
     public Case gatherRelevantData(){

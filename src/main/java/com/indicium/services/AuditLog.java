@@ -20,5 +20,12 @@ public class AuditLog {
         logsRepo.saveLog(auditCategory, action,  userID, caseID, evidenceID);
         return "Event logged: " + auditCategory.name() + " - " + action;
     }
+    //STUB
+    public String record(String nme, String a, int n)
+    {
+        String b ="";
+        return b ;
+    }
+     public void logEvidenceEvent(){}
 
 }
