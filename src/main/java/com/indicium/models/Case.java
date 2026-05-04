@@ -75,7 +75,7 @@ public class Case {
     }
 
     public boolean verifyStandardViewingPrivileges(int investigatorID){
-       if (AccessManager.isLockDownActive()){
+       if (AccessManager.isLockdownActive()){
            System.out.println("[SECURITY] Access Denied. LockDown is Active.");
            return false;
        }
