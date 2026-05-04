@@ -146,4 +146,15 @@ public class EvidenceRepo {
         }
         return list;
     }
+
+    public static boolean checkDuplicate(String hash)
+    {
+        int len = EvidenceRepo.evidenceList.size();
+        for (int i = 0; i < len; i++)
+        {
+            Evidence evidence = EvidenceRepo.evidenceList.get(i);
+            if(hash.equals(evidence.getHash())) return false;
+        }
+        return true;
+    }
 }
