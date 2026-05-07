@@ -8,6 +8,9 @@ import com.indicium.repository.EvidenceRepo;
 import com.indicium.ui.EvidenceDashBoardController;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 
 import com.indicium.models.EvidenceStatus;
@@ -31,15 +34,30 @@ public class EvidenceManager
         }
 
         // Step 2: Check for duplicate (UC5 - checkDuplicate)
-        Case case_ = new Case(caseID, caseTitle, LocalDateTime.now());
-        if (case_.checkDuplicate(fileHash))
+        if (EvidenceRepo.checkDuplicate(fileHash))
         {
-            System.out.println("[EvidenceManager] DUPLICATE DETECTED: " + file.getName() + " already exists in case " + caseID);
+            System.out.println("[EvidenceManager] DUPLICATE DETECTED: " + file.getName() + " already exists in the system.");
+            return null;
+        }
+
+        Case case_ = new Case(caseID, caseTitle, LocalDateTime.now());
+
+        // Step 2.5: Securely copy the file to the internal vault
+        File vaultDir = new File("evidence_vault/case_" + caseID);
+        if (!vaultDir.exists()) {
+            vaultDir.mkdirs();
+        }
+        
+        File secureFile = new File(vaultDir, file.getName());
+        try {
+            Files.copy(file.toPath(), secureFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException e) {
+            System.out.println("[EvidenceManager] ERROR: Failed to copy evidence to secure vault - " + e.getMessage());
             return null;
         }
 
         // Step 3: Create evidence object (UC5 - <<create>> evidence:Evidence)
-        Evidence evidence = new Evidence(file, fileHash);
+        Evidence evidence = new Evidence(secureFile, fileHash);
         evidence.setStatus(EvidenceStatus.COLLECTED.ordinal());
 
         // Step 4: Link evidence to the case

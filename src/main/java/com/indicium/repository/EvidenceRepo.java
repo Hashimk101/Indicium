@@ -84,6 +84,21 @@ public class EvidenceRepo {
     }
 
     // ===================================================================================
+    // UPDATE: Change Evidence Status
+    // ===================================================================================
+    public static void updateStatus(int evidenceID, com.indicium.models.EvidenceStatus status) {
+        String sql = "UPDATE Evidence SET Status = ? WHERE EvidenceID = ?";
+        try (Connection con = DriverManager.getConnection(URL, USER, PASS);
+             PreparedStatement stmt = con.prepareStatement(sql)) {
+            stmt.setString(1, status.name());
+            stmt.setInt(2, evidenceID);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            System.err.println("[EvidenceRepo] ERROR: Failed to update status - " + e.getMessage());
+        }
+    }
+
+    // ===================================================================================
     // RETRIEVAL: Get a single piece of Evidence (Used in requestMedia)
     // ===================================================================================
     public static Evidence getEvidence(int evidenceID) {
@@ -108,9 +123,19 @@ public class EvidenceRepo {
                     // 3. Override the auto-generated ID with the true Database ID
                     ev.setEvidenceID(rs.getInt("EvidenceID"));
 
-                    // 4. Restore the lock status
-                    if ("LOCKED".equals(rs.getString("Status"))) {
+                    // 4. Restore the lock status and EvidenceStatus
+                    String dbStatus = rs.getString("Status");
+                    if ("LOCKED".equals(dbStatus)) {
                         ev.lock();
+                        ev.setStatus(com.indicium.models.EvidenceStatus.COLLECTED);
+                    } else if ("ACTIVE".equals(dbStatus)) {
+                        ev.setStatus(com.indicium.models.EvidenceStatus.COLLECTED);
+                    } else if (dbStatus != null) {
+                        try {
+                            ev.setStatus(com.indicium.models.EvidenceStatus.valueOf(dbStatus));
+                        } catch (IllegalArgumentException e) {
+                            ev.setStatus(com.indicium.models.EvidenceStatus.COLLECTED);
+                        }
                     }
 
                     // 5. Restore the Case Link
@@ -145,8 +170,18 @@ public class EvidenceRepo {
                     Evidence ev = new Evidence(retrievedFile, hash);
                     ev.setEvidenceID(rs.getInt("EvidenceID"));
 
-                    if ("LOCKED".equals(rs.getString("Status"))) {
+                    String dbStatus = rs.getString("Status");
+                    if ("LOCKED".equals(dbStatus)) {
                         ev.lock();
+                        ev.setStatus(com.indicium.models.EvidenceStatus.COLLECTED);
+                    } else if ("ACTIVE".equals(dbStatus)) {
+                        ev.setStatus(com.indicium.models.EvidenceStatus.COLLECTED);
+                    } else if (dbStatus != null) {
+                        try {
+                            ev.setStatus(com.indicium.models.EvidenceStatus.valueOf(dbStatus));
+                        } catch (IllegalArgumentException e) {
+                            ev.setStatus(com.indicium.models.EvidenceStatus.COLLECTED);
+                        }
                     }
                     ev.linkWithCase(rs.getInt("CaseID"));
 
@@ -175,7 +210,7 @@ public class EvidenceRepo {
                     int count = rs.getInt(1);
 
                     // If count > 0, duplicate exists
-                    return count == 0;
+                    return count > 0;
                 }
             }
         }

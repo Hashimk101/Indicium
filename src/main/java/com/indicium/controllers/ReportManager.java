@@ -2,7 +2,9 @@ package com.indicium.controllers;
 
 import com.indicium.models.Case;
 import com.indicium.models.Report;
+import com.indicium.models.Evidence;
 import com.indicium.repository.CaseRepository;
+import com.indicium.repository.EvidenceRepo;
 import com.indicium.services.AccessManager;
 import com.indicium.services.AuditLog;
 import com.indicium.services.AuditCategory;
@@ -29,7 +31,27 @@ public class ReportManager {
         this.auditLog = new AuditLog();
     }
 
-    public Report generateReport(int caseID, int investigatorID, String reportType, String format) {
+    public Report generateReport(int caseID, int investigatorID, String reportType, String format, boolean includeAudit) {
+
+        if ("AUDIT_LOG".equals(reportType)) {
+            if (!com.indicium.services.SessionManager.getInstance().isAdminLoggedIn()) {
+                System.out.println("[ReportManager] ERROR: Only admins can generate System Audit Log.");
+                return null;
+            }
+            com.indicium.repository.LogsRepo logsRepo = new com.indicium.repository.LogsRepo();
+            java.util.List<com.indicium.models.AuditLogEntry> logs = logsRepo.fetchAllForExport(null, null, null);
+            StringBuilder sb = new StringBuilder();
+            sb.append(String.format("%-25s | %-15s | %-30s | %s\n", "TIMESTAMP", "CATEGORY", "USER", "DESCRIPTION"));
+            sb.append("----------------------------------------------------------------------------------------------------\n");
+            for (com.indicium.models.AuditLogEntry log : logs) {
+                String userStr = log.getFullName() + " (ID:" + log.getInvestigatorID() + ")";
+                sb.append(String.format("%-25s | %-15s | %-30s | %s\n", 
+                        log.getTimestamp(), log.getCategory(), userStr, log.getDescription()));
+            }
+            Report newReport = new Report(0, reportType, "PDF");
+            newReport.formatAndHashReport(sb.toString());
+            return newReport;
+        }
 
         // 1. Verify Privileges
         if (!accessManager.verifyPrivileges(investigatorID, caseID)) {
@@ -46,6 +68,12 @@ public class ReportManager {
             return null;
         }
 
+        // 2.5. Populate case evidence and timeline data
+        java.util.List<Evidence> evidenceList = EvidenceRepo.findByCase(caseID);
+        for (Evidence ev : evidenceList) {
+            targetCase.addEvidence(ev);
+        }
+
         // 3. Verify Dataset isn't empty
         if (targetCase.getEvidenceList().isEmpty() && targetCase.getTimeLineEvents().isEmpty()) {
             System.out.println("[ReportManager] Exception 3a: Empty Dataset. Halting process.");
@@ -53,9 +81,30 @@ public class ReportManager {
         }
 
         // 4. Gather Data and Generate Model
-        String caseData = targetCase.getDetails();
+        StringBuilder caseData = new StringBuilder(targetCase.getDetails());
+        
+        if (includeAudit) {
+            caseData.append("\n\n====================================================\n");
+            caseData.append("CASE AUDIT TRAIL:\n");
+            caseData.append("----------------------------------------------------\n");
+            caseData.append(String.format("%-25s | %-15s | %-30s | %s\n", "TIMESTAMP", "CATEGORY", "USER", "DESCRIPTION"));
+            caseData.append("----------------------------------------------------------------------------------------------------\n");
+            com.indicium.repository.LogsRepo logsRepo = new com.indicium.repository.LogsRepo();
+            java.util.List<com.indicium.models.AuditLogEntry> logs = logsRepo.fetchLogsByCase(caseID);
+            if (logs.isEmpty()) {
+                caseData.append("No audit logs found for this case.\n");
+            } else {
+                for (com.indicium.models.AuditLogEntry log : logs) {
+                    String userStr = log.getFullName() + " (ID:" + log.getInvestigatorID() + ")";
+                    caseData.append(String.format("%-25s | %-15s | %-30s | %s\n", 
+                            log.getTimestamp(), log.getCategory(), userStr, log.getDescription()));
+                }
+            }
+        }
+        
         Report newReport = new Report(caseID, reportType, "PDF"); // Forcing PDF format for export
-        newReport.formatAndHashReport(caseData);
+        newReport.formatAndHashReport(caseData.toString());
+        newReport.setEvidenceList(targetCase.getEvidenceList());
 
         return newReport;
     }
@@ -79,6 +128,26 @@ public class ReportManager {
             doc.add(new Paragraph("Hash        : " + report.getReportHash(), bodyFont));
             doc.add(new Paragraph(" "));
             doc.add(new Paragraph(report.getContent(), bodyFont));
+
+            // Include Evidence Images
+            if (report.getEvidenceList() != null && !report.getEvidenceList().isEmpty()) {
+                doc.add(new Paragraph("\n--- PHOTO EVIDENCE ---\n", titleFont));
+                for (Evidence ev : report.getEvidenceList()) {
+                    try {
+                        String lowerPath = ev.getFilePath().toLowerCase();
+                        if (lowerPath.endsWith(".png") || lowerPath.endsWith(".jpg") || lowerPath.endsWith(".jpeg")) {
+                            com.itextpdf.text.Image img = com.itextpdf.text.Image.getInstance(ev.getFilePath());
+                            img.scaleToFit(400, 400);
+                            img.setAlignment(com.itextpdf.text.Element.ALIGN_CENTER);
+                            doc.add(new Paragraph("Evidence ID: " + ev.getEvidenceID() + " - " + ev.getName(), bodyFont));
+                            doc.add(img);
+                            doc.add(new Paragraph("\n"));
+                        }
+                    } catch (Exception ignored) {
+                        System.err.println("[ReportManager] Could not embed image: " + ev.getFilePath());
+                    }
+                }
+            }
 
             doc.close();
 

@@ -3,6 +3,8 @@ package com.indicium.models;
 import com.indicium.services.HashGenerator;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Report
 {
@@ -16,6 +18,7 @@ public class Report
     private String content;
     private String reportHash;
     private String generationDate;
+    private List<Evidence> evidenceList = new ArrayList<>();
 
     public Report(int caseID, String reportType, String format) {
         this.reportID = idCounter++;
@@ -55,4 +58,7 @@ public class Report
     public String getFormat() { return format; }
     public String getReportHash() { return reportHash; }
     public String getGenerationDate() { return generationDate; }
+    
+    public void setEvidenceList(List<Evidence> evidenceList) { this.evidenceList = evidenceList; }
+    public List<Evidence> getEvidenceList() { return evidenceList; }
 }

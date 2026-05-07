@@ -361,7 +361,7 @@ public class ReportGenController extends StackPane {
 
         new Thread(() -> {
             Report report = reportManager.generateReport(
-                    caseID, currentUserID, selectedReportType, format
+                    caseID, currentUserID, selectedReportType, format, includeAuditTrail
             );
             Platform.runLater(() -> {
                 showGeneratingOverlay(false);

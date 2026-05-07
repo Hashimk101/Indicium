@@ -75,6 +75,9 @@ public class Case {
     }
 
     public boolean verifyStandardViewingPrivileges(int investigatorID){
+       if (com.indicium.services.SessionManager.getInstance().isAdminLoggedIn()) {
+           return true; // Admins have global viewing rights
+       }
        if (AccessManager.isLockdownActive()){
            System.out.println("[SECURITY] Access Denied. LockDown is Active.");
            return false;
@@ -85,8 +88,7 @@ public class Case {
             System.out.println("[SECURITY] Access Denied. Case is Archived.");
             return false;
         }
-        return false; //STUB FIX IT
-//       return CaseRepository.isUserAssignedToCase(investigatorID, this.caseID);
+        return CaseRepository.isUserAssignedToCase(investigatorID, this.caseID);
     }
 
     public Case gatherRelevantData(){
