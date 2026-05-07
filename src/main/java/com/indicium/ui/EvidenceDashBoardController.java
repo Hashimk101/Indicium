@@ -358,16 +358,20 @@ public class EvidenceDashBoardController extends StackPane {
         MenuItem link     = makeMenuItem("Manage Links",     "icons8-link-100.png");
         MenuItem discard  = makeMenuItem("Discard",          "icons8-delete-100.png");
         discard.getStyleClass().add("menu-item-delete");
-        discard.setDisable(!isAdmin);
+        discard.setDisable(!isAdmin || "Discarded".equalsIgnoreCase(status));
+
+        MenuItem restore = makeMenuItem("Restore", "icons8-edit-100.png");
+        restore.setDisable(!isAdmin || !"Discarded".equalsIgnoreCase(status));
 
         view.setOnAction(e     -> handleViewEvidence(evidenceId));
         download.setOnAction(e -> handleDownloadEvidence(evidenceId));
         verify.setOnAction(e   -> handleVerifyEvidence(evidenceId));
         link.setOnAction(e     -> handleOpenLinkManager(evidenceId));
         discard.setOnAction(e  -> handleDiscardEvidence(evidenceId));
+        restore.setOnAction(e  -> handleRestoreEvidence(evidenceId));
 
         menu.getItems().addAll(view, download, new SeparatorMenuItem(),
-                verify, link, new SeparatorMenuItem(), discard);
+                verify, link, new SeparatorMenuItem(), discard, restore);
         menu.show(anchor, javafx.geometry.Side.BOTTOM, 0, 0);
     }
 
@@ -759,6 +763,7 @@ public class EvidenceDashBoardController extends StackPane {
                 .ifPresent(e -> {
                     if (e.getStatus() == EvidenceStatus.COLLECTED) {
                         e.setStatus(EvidenceStatus.LINKED);
+                        com.indicium.repository.EvidenceRepo.updateStatus(e.getEvidenceID(), EvidenceStatus.LINKED);
                         loadEvidence();
                     }
                 });
@@ -807,6 +812,7 @@ public class EvidenceDashBoardController extends StackPane {
                     "File hash mismatch — this evidence may have been tampered with.\n" +
                             "Evidence ID: " + evidenceId);
             e.setStatus(EvidenceStatus.DISCARDED);
+            com.indicium.repository.EvidenceRepo.updateStatus(id, EvidenceStatus.DISCARDED);
             loadEvidence();
             return;
         }
@@ -886,6 +892,9 @@ public class EvidenceDashBoardController extends StackPane {
 
         if (!valid) {
             e.setStatus(EvidenceStatus.DISCARDED);
+            com.indicium.repository.EvidenceRepo.updateStatus(id, EvidenceStatus.DISCARDED);
+            int currentUserID = com.indicium.services.SessionManager.getInstance().getCurrentUser().getUserID();
+            new com.indicium.services.AuditLog().logEvent(currentUserID, "Integrity check failed. Evidence automatically discarded.", com.indicium.services.AuditCategory.EVIDENCE, currentCaseID, id);
             loadEvidence();
         }
     }
@@ -902,7 +911,39 @@ public class EvidenceDashBoardController extends StackPane {
                 Evidence e  = evidenceRepo.findById(id);
                 if (e == null) return;
                 e.setStatus(EvidenceStatus.DISCARDED);
+                com.indicium.repository.EvidenceRepo.updateStatus(id, EvidenceStatus.DISCARDED);
+                int currentUserID = com.indicium.services.SessionManager.getInstance().getCurrentUser().getUserID();
+                new com.indicium.services.AuditLog().logEvent(currentUserID, "Manual Discard", com.indicium.services.AuditCategory.EVIDENCE, currentCaseID, id);
                 System.out.println("[EvidenceDashBoard] Evidence discarded: " + evidenceId);
+                loadEvidence();
+            }
+        });
+    }
+
+    private void handleRestoreEvidence(String evidenceId) {
+        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+        confirm.setTitle("Restore Evidence");
+        confirm.setHeaderText("Restore EV-" + evidenceId + "?");
+        confirm.setContentText("This will restore the discarded evidence back to Collected status.");
+
+        confirm.showAndWait().ifPresent(response -> {
+            if (response == ButtonType.OK) {
+                int id = Integer.parseInt(evidenceId);
+                Evidence e = evidenceRepo.findById(id);
+                if (e == null) return;
+                
+                String storedHash = e.getDigitalFingerprint();
+                String currentHash = HashGenerator.generateSHA256(e.getFilePath());
+                if (storedHash == null || !storedHash.equals(currentHash)) {
+                    showAlert("Restore Failed", "Cannot restore! File hash mismatch — this evidence has been tampered with.");
+                    return;
+                }
+                
+                e.setStatus(EvidenceStatus.COLLECTED);
+                com.indicium.repository.EvidenceRepo.updateStatus(id, EvidenceStatus.COLLECTED);
+                int currentUserID = com.indicium.services.SessionManager.getInstance().getCurrentUser().getUserID();
+                new com.indicium.services.AuditLog().logEvent(currentUserID, "Restored Discarded Evidence", com.indicium.services.AuditCategory.EVIDENCE, currentCaseID, id);
+                System.out.println("[EvidenceDashBoard] Evidence restored: " + evidenceId);
                 loadEvidence();
             }
         });

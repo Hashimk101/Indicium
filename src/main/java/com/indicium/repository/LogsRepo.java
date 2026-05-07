@@ -219,4 +219,42 @@ public class LogsRepo {
         // Reuse fetchLogs with a very large limit
         return fetchLogs(search, category, role, Integer.MAX_VALUE, 0);
     }
+
+    // ── Fetch by Case ID ─────────────────────────────────────────
+
+    public List<AuditLogEntry> fetchLogsByCase(int caseID) {
+        List<AuditLogEntry> results = new ArrayList<>();
+        String sql = """
+                SELECT
+                    f.LogID, f.Category, f.Description, f.InvestigatorID,
+                    f.LinkedCaseID, f.LinkedEvidenceID, f.LogTimestamp,
+                    u.FullName, u.Role
+                FROM ForensicAuditLog f
+                LEFT JOIN users u ON f.InvestigatorID = u.UserID
+                WHERE f.LinkedCaseID = ?
+                ORDER BY f.LogTimestamp DESC
+                """;
+
+        try (Connection con = connect();
+             PreparedStatement stmt = con.prepareStatement(sql)) {
+            stmt.setInt(1, caseID);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                AuditLogEntry entry = new AuditLogEntry();
+                entry.setLogID(rs.getInt("LogID"));
+                entry.setCategory(rs.getString("Category"));
+                entry.setDescription(rs.getString("Description"));
+                entry.setInvestigatorID(rs.getInt("InvestigatorID"));
+                entry.setLinkedCaseID(rs.getInt("LinkedCaseID"));
+                entry.setLinkedEvidenceID(rs.getInt("LinkedEvidenceID"));
+                entry.setTimestamp(rs.getTimestamp("LogTimestamp").toLocalDateTime());
+                entry.setFullName(rs.getString("FullName") != null ? rs.getString("FullName") : "Unknown");
+                entry.setRole(rs.getString("Role") != null ? rs.getString("Role") : "Unknown");
+                results.add(entry);
+            }
+        } catch (SQLException e) {
+            System.err.println("[LogsRepo] fetchLogsByCase failed: " + e.getMessage());
+        }
+        return results;
+    }
 }
