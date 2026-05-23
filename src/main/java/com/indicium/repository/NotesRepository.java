@@ -13,30 +13,8 @@ import java.util.Properties;
 
 public class NotesRepository {
 
-    private static String URL;
-    private static String USER;
-    private static String PASS;
-
     static {
-        loadDatabaseConfig();
-        try {
-            Class.forName("org.postgresql.Driver");
-        } catch (ClassNotFoundException e) {
-            System.err.println("PostgreSQL Driver not found.");
-        }
         createTablesIfNotExists();
-    }
-
-    private static void loadDatabaseConfig() {
-        Properties props = new Properties();
-        try (FileInputStream in = new FileInputStream("database.properties")) {
-            props.load(in);
-            URL = props.getProperty("db.url");
-            USER = props.getProperty("db.user");
-            PASS = props.getProperty("db.password");
-        } catch (IOException e) {
-            System.err.println("CRITICAL: database.properties file not found!");
-        }
     }
 
     private static void createTablesIfNotExists() {
@@ -60,7 +38,7 @@ public class NotesRepository {
                 "FOREIGN KEY (UserID) REFERENCES Users(UserID) ON DELETE CASCADE" +
                 ")";
 
-        try (Connection con = DriverManager.getConnection(URL, USER, PASS);
+        try (Connection con = DatabaseConnectionPool.getConnection();
              Statement stmt = con.createStatement()) {
             stmt.execute(createNotesTable);
             stmt.execute(createTasksTable);
@@ -74,7 +52,7 @@ public class NotesRepository {
     // ==========================================
     public Note saveNote(Note note) {
         String sql = "INSERT INTO Notes (Title, Body, Tag, CreatedAt, UserID) VALUES (?, ?, ?, ?, ?)";
-        try (Connection con = DriverManager.getConnection(URL, USER, PASS);
+        try (Connection con = DatabaseConnectionPool.getConnection();
              PreparedStatement stmt = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             stmt.setString(1, note.getTitle());
@@ -98,7 +76,7 @@ public class NotesRepository {
 
     public void deleteNote(int noteId) {
         String sql = "DELETE FROM Notes WHERE NoteID = ?";
-        try (Connection con = DriverManager.getConnection(URL, USER, PASS);
+        try (Connection con = DatabaseConnectionPool.getConnection();
              PreparedStatement stmt = con.prepareStatement(sql)) {
             stmt.setInt(1, noteId);
             stmt.executeUpdate();
@@ -110,7 +88,7 @@ public class NotesRepository {
     public List<Note> getNotesByUserId(int userId) {
         List<Note> notes = new ArrayList<>();
         String sql = "SELECT * FROM Notes WHERE UserID = ? ORDER BY CreatedAt ASC";
-        try (Connection con = DriverManager.getConnection(URL, USER, PASS);
+        try (Connection con = DatabaseConnectionPool.getConnection();
              PreparedStatement stmt = con.prepareStatement(sql)) {
 
             stmt.setInt(1, userId);
@@ -137,7 +115,7 @@ public class NotesRepository {
     // ==========================================
     public Task saveTask(Task task) {
         String sql = "INSERT INTO Tasks (Text, Priority, IsDone, CreatedAt, UserID) VALUES (?, ?, ?, ?, ?)";
-        try (Connection con = DriverManager.getConnection(URL, USER, PASS);
+        try (Connection con = DatabaseConnectionPool.getConnection();
              PreparedStatement stmt = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             stmt.setString(1, task.getText());
@@ -161,7 +139,7 @@ public class NotesRepository {
 
     public void updateTaskStatus(int taskId, boolean isDone) {
         String sql = "UPDATE Tasks SET IsDone = ? WHERE TaskID = ?";
-        try (Connection con = DriverManager.getConnection(URL, USER, PASS);
+        try (Connection con = DatabaseConnectionPool.getConnection();
              PreparedStatement stmt = con.prepareStatement(sql)) {
             stmt.setBoolean(1, isDone);
             stmt.setInt(2, taskId);
@@ -173,7 +151,7 @@ public class NotesRepository {
 
     public void deleteTask(int taskId) {
         String sql = "DELETE FROM Tasks WHERE TaskID = ?";
-        try (Connection con = DriverManager.getConnection(URL, USER, PASS);
+        try (Connection con = DatabaseConnectionPool.getConnection();
              PreparedStatement stmt = con.prepareStatement(sql)) {
             stmt.setInt(1, taskId);
             stmt.executeUpdate();
@@ -185,7 +163,7 @@ public class NotesRepository {
     public List<Task> getTasksByUserId(int userId) {
         List<Task> tasks = new ArrayList<>();
         String sql = "SELECT * FROM Tasks WHERE UserID = ? ORDER BY CreatedAt ASC";
-        try (Connection con = DriverManager.getConnection(URL, USER, PASS);
+        try (Connection con = DatabaseConnectionPool.getConnection();
              PreparedStatement stmt = con.prepareStatement(sql)) {
 
             stmt.setInt(1, userId);

@@ -6,6 +6,7 @@ module com.indicium {
     requires java.desktop;
 
     requires itextpdf;
+    requires com.zaxxer.hikari;
 
     // JavaFX needs reflective access to ALL controller/UI packages
     opens com.indicium.ui to javafx.fxml;

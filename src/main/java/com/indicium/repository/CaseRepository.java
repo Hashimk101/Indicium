@@ -15,30 +15,7 @@ import java.util.Properties;
 public class CaseRepository {
 
     // Database configuration
-    private static String URL;
-    private static String USER;
-    private static String PASS;
 
-    static {
-        loadDatabaseConfig();
-        try {
-            Class.forName("org.postgresql.Driver");
-        } catch (ClassNotFoundException e) {
-            System.err.println("PostgreSQL Driver not found.");
-        }
-    }
-
-    private static void loadDatabaseConfig() {
-        Properties props = new Properties();
-        try (FileInputStream in = new FileInputStream("database.properties")) {
-            props.load(in);
-            URL = props.getProperty("db.url");
-            USER = props.getProperty("db.user");
-            PASS = props.getProperty("db.password");
-        } catch (IOException e) {
-            System.err.println("CRITICAL: database.properties file not found!");
-        }
-    }
 
     // ===================================================================================
     // INITIALIZATION & SAVING
@@ -46,7 +23,7 @@ public class CaseRepository {
     public void save(Case newCase) {
         String sql = "INSERT INTO Cases (CaseID, Title, IncidentDate, Status) VALUES (?, ?, ?, ?)";
 
-        try (Connection con = DriverManager.getConnection(URL, USER, PASS);
+        try (Connection con = DatabaseConnectionPool.getConnection();
              PreparedStatement stmt = con.prepareStatement(sql)) {
 
             stmt.setInt(1, newCase.getCaseID());
@@ -62,7 +39,7 @@ public class CaseRepository {
 
     public static int generateNextCaseID() {
         String sql = "SELECT MAX(CaseID) FROM Cases";
-        try (Connection con = DriverManager.getConnection(URL, USER, PASS);
+        try (Connection con = DatabaseConnectionPool.getConnection();
              Statement stmt = con.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
             if (rs.next()) {
@@ -81,7 +58,7 @@ public class CaseRepository {
     public Case findById(int caseID) {
         String sql = "SELECT * FROM Cases WHERE CaseID = ?";
 
-        try (Connection con = DriverManager.getConnection(URL, USER, PASS);
+        try (Connection con = DatabaseConnectionPool.getConnection();
              PreparedStatement stmt = con.prepareStatement(sql)) {
 
             stmt.setInt(1, caseID);
@@ -108,7 +85,7 @@ public class CaseRepository {
         // Append the dynamically built condition to the base SELECT statement
         String sql = "SELECT * FROM Cases WHERE " + condition;
 
-        try (Connection con = DriverManager.getConnection(URL, USER, PASS);
+        try (Connection con = DatabaseConnectionPool.getConnection();
              Statement stmt = con.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
 
@@ -131,7 +108,7 @@ public class CaseRepository {
         // We sync the entire object state back to the database safely
         String sql = "UPDATE Cases SET Title = ?, IncidentDate = ?, Status = ? WHERE CaseID = ?";
 
-        try (Connection con = DriverManager.getConnection(URL, USER, PASS);
+        try (Connection con = DatabaseConnectionPool.getConnection();
              PreparedStatement stmt = con.prepareStatement(sql)) {
 
             stmt.setString(1, c.getTitle());
@@ -151,7 +128,7 @@ public class CaseRepository {
     public static boolean isUserAssignedToCase(int investigatorID, int caseID) {
         String sql = "SELECT 1 FROM CaseAssignments WHERE InvestigatorID = ? AND CaseID = ?";
 
-        try (Connection con = DriverManager.getConnection(URL, USER, PASS);
+        try (Connection con = DatabaseConnectionPool.getConnection();
              PreparedStatement stmt = con.prepareStatement(sql)) {
 
             stmt.setInt(1, investigatorID);
@@ -181,7 +158,7 @@ public class CaseRepository {
         String sql = "SELECT * FROM Cases ORDER BY IncidentDate DESC";
         List<Case> cases = new ArrayList<>();
 
-        try (Connection con = DriverManager.getConnection(URL, USER, PASS);
+        try (Connection con = DatabaseConnectionPool.getConnection();
              Statement stmt = con.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
 
@@ -202,7 +179,7 @@ public class CaseRepository {
               AND (? = 'All' OR Status = ?)
             ORDER BY CaseID DESC LIMIT 8
             """;
-        try (Connection con = DriverManager.getConnection(URL, USER, PASS);
+        try (Connection con = DatabaseConnectionPool.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             String like = "%" + query + "%";
             ps.setString(1, like);
@@ -248,7 +225,7 @@ public class CaseRepository {
 
     // Shared helper — runs any SELECT COUNT(*) query
     private static int runCountQuery(String sql) {
-        try (Connection con = DriverManager.getConnection(URL, USER, PASS);
+        try (Connection con = DatabaseConnectionPool.getConnection();
              PreparedStatement stmt = con.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
 

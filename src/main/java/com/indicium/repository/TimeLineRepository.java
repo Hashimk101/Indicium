@@ -12,33 +12,11 @@ import java.util.Properties;
 
 public class TimeLineRepository {
 
-    private String URL;
-    private String USER;
-    private String PASS;
-
     public TimeLineRepository() {
-        loadDatabaseConfig();
-        try {
-            Class.forName("org.postgresql.Driver");
-        } catch (ClassNotFoundException e) {
-            System.err.println("[TimeLineRepo] PostgreSQL Driver not found.");
-        }
-    }
-
-    private void loadDatabaseConfig() {
-        Properties props = new Properties();
-        try (FileInputStream in = new FileInputStream("database.properties")) {
-            props.load(in);
-            this.URL  = props.getProperty("db.url");
-            this.USER = props.getProperty("db.user");
-            this.PASS = props.getProperty("db.password");
-        } catch (IOException e) {
-            System.err.println("[TimeLineRepo] CRITICAL: database.properties not found!");
-        }
     }
 
     private Connection connect() throws SQLException {
-        return DriverManager.getConnection(URL, USER, PASS);
+        return DatabaseConnectionPool.getConnection();
     }
 
     // ── Save new event ──────────────────────────────────────────
