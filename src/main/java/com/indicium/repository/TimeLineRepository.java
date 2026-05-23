@@ -19,9 +19,9 @@ public class TimeLineRepository {
     public TimeLineRepository() {
         loadDatabaseConfig();
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
+            Class.forName("org.postgresql.Driver");
         } catch (ClassNotFoundException e) {
-            System.err.println("[TimeLineRepo] MySQL Driver not found.");
+            System.err.println("[TimeLineRepo] PostgreSQL Driver not found.");
         }
     }
 

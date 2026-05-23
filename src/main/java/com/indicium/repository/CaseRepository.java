@@ -22,9 +22,9 @@ public class CaseRepository {
     static {
         loadDatabaseConfig();
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
+            Class.forName("org.postgresql.Driver");
         } catch (ClassNotFoundException e) {
-            System.err.println("MySQL Driver not found.");
+            System.err.println("PostgreSQL Driver not found.");
         }
     }
 

@@ -18,9 +18,9 @@ public class CorrelationRepo {
     public CorrelationRepo() {
         loadDatabaseConfig();
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
+            Class.forName("org.postgresql.Driver");
         } catch (ClassNotFoundException e) {
-            System.err.println("[CorrelationRepo] MySQL Driver not found.");
+            System.err.println("[CorrelationRepo] PostgreSQL Driver not found.");
         }
     }
 

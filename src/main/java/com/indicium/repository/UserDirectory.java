@@ -18,8 +18,8 @@ public class UserDirectory {
 
     static {
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            System.out.println("[UserDirectory] MySQL driver loaded OK.");
+            Class.forName("org.postgresql.Driver");
+            System.out.println("[UserDirectory] PostgreSQL driver loaded OK.");
         } catch (ClassNotFoundException e) {
             System.err.println("[UserDirectory] CRITICAL: Driver not found: " + e.getMessage());
         }
