@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="src\main\resources\com\indicium\ui\Assets\Indicium_Logo_v2.png" alt="Indicium Logo" width="80" />
+<img src="src\main\resources\com\indicium\ui\Assets\Indicium_Logo_v2.png" alt="Indicium Logo" width="150" />
 
 # INDICIUM
 ### Forensic Case Management System
@@ -28,7 +28,7 @@
 
 Designed with a real-world forensic environment in mind, Indicium enforces **role-based access control**, maintains a **tamper-evident audit log**, and provides administrators with powerful tools including an **emergency lockdown kill switch**.
 
-> Built as a team project by 3 contributors as part of a full-stack Java desktop development course.
+> Built as a team project by 3 contributors as part of a software design and analysis (SDA)  course.
 
 ---
 
