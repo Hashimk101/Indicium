@@ -82,18 +82,4 @@ Make sure your `pom.xml` includes:
 
 ---
 
-## .gitignore
 
-Make sure this is in your `.gitignore`:
-```gitignore
-# Secrets
-src/main/resources/com/indicium/config/db.properties
-
-# Build output
-target/
-
-# IDE files
-.idea/
-*.iml
-.vscode/
-```
