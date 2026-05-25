@@ -11,33 +11,11 @@ import java.util.Properties;
 
 public class CorrelationRepo {
 
-    private String URL;
-    private String USER;
-    private String PASS;
-
     public CorrelationRepo() {
-        loadDatabaseConfig();
-        try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-        } catch (ClassNotFoundException e) {
-            System.err.println("[CorrelationRepo] MySQL Driver not found.");
-        }
-    }
-
-    private void loadDatabaseConfig() {
-        Properties props = new Properties();
-        try (FileInputStream in = new FileInputStream("database.properties")) {
-            props.load(in);
-            this.URL  = props.getProperty("db.url");
-            this.USER = props.getProperty("db.user");
-            this.PASS = props.getProperty("db.password");
-        } catch (IOException e) {
-            System.err.println("[CorrelationRepo] CRITICAL: database.properties not found!");
-        }
     }
 
     private Connection connect() throws SQLException {
-        return DriverManager.getConnection(URL, USER, PASS);
+        return DatabaseConnectionPool.getConnection();
     }
 
     // ═══════════════════════════════════════════════════════════

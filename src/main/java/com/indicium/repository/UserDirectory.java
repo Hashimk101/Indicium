@@ -12,31 +12,7 @@ import java.util.Properties;
 
 public class UserDirectory {
 
-    private static String URL;
-    private static String USER;
-    private static String PASS;
 
-    static {
-        try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            System.out.println("[UserDirectory] MySQL driver loaded OK.");
-        } catch (ClassNotFoundException e) {
-            System.err.println("[UserDirectory] CRITICAL: Driver not found: " + e.getMessage());
-        }
-        loadDatabaseConfig();
-    }
-
-    private static void loadDatabaseConfig() {
-        Properties props = new Properties();
-        try (FileInputStream in = new FileInputStream("database.properties")) {
-            props.load(in);
-            URL  = props.getProperty("db.url");
-            USER = props.getProperty("db.user");
-            PASS = props.getProperty("db.password");
-        } catch (IOException e) {
-            System.err.println("CRITICAL: database.properties file not found!");
-        }
-    }
 
     // ===================================================================================
     // CORE FUNCTIONS
@@ -45,7 +21,7 @@ public class UserDirectory {
     public static SystemUser findUser(int userID) {
         String sql = "SELECT * FROM Users WHERE UserID = ?";
 
-        try (Connection con = DriverManager.getConnection(URL, USER, PASS);
+        try (Connection con = DatabaseConnectionPool.getConnection();
              PreparedStatement stmt = con.prepareStatement(sql)) {
 
             stmt.setInt(1, userID);
@@ -61,7 +37,7 @@ public class UserDirectory {
     public static SystemUser authenticate(String email, String hashedInputPassword) {
         String sql = "SELECT * FROM Users WHERE Email = ? AND PasswordHash = ? AND IsActive = TRUE";
 
-        try (Connection con = DriverManager.getConnection(URL, USER, PASS);
+        try (Connection con = DatabaseConnectionPool.getConnection();
              PreparedStatement stmt = con.prepareStatement(sql)) {
 
             stmt.setString(1, email);
@@ -86,7 +62,7 @@ public class UserDirectory {
     public static boolean updateProfile(int userID, String fullName, String email) {
         String sql = "UPDATE Users SET FullName = ?, Email = ? WHERE UserID = ?";
 
-        try (Connection con = DriverManager.getConnection(URL, USER, PASS);
+        try (Connection con = DatabaseConnectionPool.getConnection();
              PreparedStatement stmt = con.prepareStatement(sql)) {
 
             stmt.setString(1, fullName);
@@ -107,7 +83,7 @@ public class UserDirectory {
     public static boolean verifyPassword(int userID, String hashedPassword) {
         String sql = "SELECT 1 FROM Users WHERE UserID = ? AND PasswordHash = ?";
 
-        try (Connection con = DriverManager.getConnection(URL, USER, PASS);
+        try (Connection con = DatabaseConnectionPool.getConnection();
              PreparedStatement stmt = con.prepareStatement(sql)) {
 
             stmt.setInt(1, userID);
@@ -129,7 +105,7 @@ public class UserDirectory {
     public static boolean updatePassword(int userID, String hashedNewPassword) {
         String sql = "UPDATE Users SET PasswordHash = ? WHERE UserID = ?";
 
-        try (Connection con = DriverManager.getConnection(URL, USER, PASS);
+        try (Connection con = DatabaseConnectionPool.getConnection();
              PreparedStatement stmt = con.prepareStatement(sql)) {
 
             stmt.setString(1, hashedNewPassword);
@@ -152,7 +128,7 @@ public class UserDirectory {
     public static boolean addUser(String fullName, String email, String passwordHash, UserRole role) {
         String sql = "INSERT INTO Users (FullName, Email, PasswordHash, Role) VALUES (?, ?, ?, ?)";
 
-        try (Connection con = DriverManager.getConnection(URL, USER, PASS);
+        try (Connection con = DatabaseConnectionPool.getConnection();
              PreparedStatement stmt = con.prepareStatement(sql)) {
 
             stmt.setString(1, fullName);
@@ -170,7 +146,7 @@ public class UserDirectory {
     public static boolean deactivateUser(int userID) {
         String sql = "UPDATE Users SET IsActive = FALSE WHERE UserID = ?";
 
-        try (Connection con = DriverManager.getConnection(URL, USER, PASS);
+        try (Connection con = DatabaseConnectionPool.getConnection();
              PreparedStatement stmt = con.prepareStatement(sql)) {
 
             stmt.setInt(1, userID);
@@ -188,7 +164,7 @@ public class UserDirectory {
     public static boolean updateRole(int userID, UserRole newRole) {
         String sql = "UPDATE Users SET Role = ? WHERE UserID = ?";
 
-        try (Connection con = DriverManager.getConnection(URL, USER, PASS);
+        try (Connection con = DatabaseConnectionPool.getConnection();
              PreparedStatement stmt = con.prepareStatement(sql)) {
 
             stmt.setString(1, newRole.name());
@@ -205,7 +181,7 @@ public class UserDirectory {
         List<SystemUser> activeUsers = new ArrayList<>();
         String sql = "SELECT * FROM Users WHERE IsActive = TRUE";
 
-        try (Connection con = DriverManager.getConnection(URL, USER, PASS);
+        try (Connection con = DatabaseConnectionPool.getConnection();
              PreparedStatement stmt = con.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
 

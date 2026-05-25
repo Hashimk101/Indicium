@@ -21,6 +21,35 @@ public class AuditLog {
         logsRepo.saveLog(auditCategory, action,  userID, caseID, evidenceID);
         return "Event logged: " + auditCategory.name() + " - " + action;
     }
+    // =====================================================================
+    // ASYNCHRONOUS LOGGING METHODS (Non-blocking for JavaFX UI)
+    // =====================================================================
+
+    /**
+     * Logs an event asynchronously on a background thread.
+     * Use this in JavaFX Controllers to prevent UI freezing during network latency.
+     */
+    public void logEventAsync(int userID, String action, AuditCategory auditCategory) {
+        AsyncDatabaseExecutor.runAsync(() -> {
+            logsRepo.saveLog(auditCategory, action, userID);
+            System.out.println("[AuditLog-Async] Event logged: " + auditCategory.name() + " - " + action);
+        });
+    }
+
+    public void logEventAsync(int userID, String action, AuditCategory auditCategory, int caseID) {
+        AsyncDatabaseExecutor.runAsync(() -> {
+            logsRepo.saveLog(auditCategory, action, userID, caseID);
+            System.out.println("[AuditLog-Async] Event logged: " + auditCategory.name() + " - " + action);
+        });
+    }
+
+    public void logEventAsync(int userID, String action, AuditCategory auditCategory, int caseID, int evidenceID) {
+        AsyncDatabaseExecutor.runAsync(() -> {
+            logsRepo.saveLog(auditCategory, action, userID, caseID, evidenceID);
+            System.out.println("[AuditLog-Async] Event logged: " + auditCategory.name() + " - " + action);
+        });
+    }
+
     //STUB
     public String record(String nme, String a, int n)
     {

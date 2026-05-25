@@ -12,32 +12,7 @@ import java.util.Properties;
 
 public class EvidenceRepo {
 
-    // Database configuration
-    private static String URL;
-    private static String USER;
-    private static String PASS;
 
-    // Static block to load credentials once when the program starts
-    static {
-        loadDatabaseConfig();
-        try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-        } catch (ClassNotFoundException e) {
-            System.err.println("MySQL Driver not found.");
-        }
-    }
-
-    private static void loadDatabaseConfig() {
-        Properties props = new Properties();
-        try (FileInputStream in = new FileInputStream("database.properties")) {
-            props.load(in);
-            URL = props.getProperty("db.url");
-            USER = props.getProperty("db.user");
-            PASS = props.getProperty("db.password");
-        } catch (IOException e) {
-            System.err.println("CRITICAL: database.properties file not found!");
-        }
-    }
 
 
     public List<Evidence> findByCaseId(int caseID) {
@@ -57,7 +32,7 @@ public class EvidenceRepo {
         // We use UploaderID as 0 or null for now since your manager doesn't pass it yet
         String sql = "INSERT INTO Evidence (CaseID, FileName, FileHash, StoragePath, Status, UploaderID) VALUES (?, ?, ?, ?, ?, ?)";
 
-        try (Connection con = DriverManager.getConnection(URL, USER, PASS);
+        try (Connection con = DatabaseConnectionPool.getConnection();
              PreparedStatement stmt = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             stmt.setInt(1, caseID);
@@ -88,7 +63,7 @@ public class EvidenceRepo {
     // ===================================================================================
     public static void updateStatus(int evidenceID, com.indicium.models.EvidenceStatus status) {
         String sql = "UPDATE Evidence SET Status = ? WHERE EvidenceID = ?";
-        try (Connection con = DriverManager.getConnection(URL, USER, PASS);
+        try (Connection con = DatabaseConnectionPool.getConnection();
              PreparedStatement stmt = con.prepareStatement(sql)) {
             stmt.setString(1, status.name());
             stmt.setInt(2, evidenceID);
@@ -104,7 +79,7 @@ public class EvidenceRepo {
     public static Evidence getEvidence(int evidenceID) {
         String sql = "SELECT * FROM Evidence WHERE EvidenceID = ?";
 
-        try (Connection con = DriverManager.getConnection(URL, USER, PASS);
+        try (Connection con = DatabaseConnectionPool.getConnection();
              PreparedStatement stmt = con.prepareStatement(sql)) {
 
             stmt.setInt(1, evidenceID);
@@ -157,7 +132,7 @@ public class EvidenceRepo {
         List<Evidence> list = new ArrayList<>();
         String sql = "SELECT * FROM Evidence WHERE CaseID = ?";
 
-        try (Connection con = DriverManager.getConnection(URL, USER, PASS);
+        try (Connection con = DatabaseConnectionPool.getConnection();
              PreparedStatement stmt = con.prepareStatement(sql)) {
 
             stmt.setInt(1, caseID);
@@ -198,7 +173,7 @@ public class EvidenceRepo {
     {
         String sql = "SELECT COUNT(*) FROM Evidence WHERE FileHash = ?";
 
-        try (Connection con = DriverManager.getConnection(URL, USER, PASS);
+        try (Connection con = DatabaseConnectionPool.getConnection();
              PreparedStatement stmt = con.prepareStatement(sql))
         {
             stmt.setString(1, hash);
