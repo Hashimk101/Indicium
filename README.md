@@ -122,12 +122,6 @@ jdbc:postgresql://aws-1-ap-southeast-1.pooler.supabase.com:5432/postgres
 
 **4. Configure your connection**
 
-Edit `src/main/resources/com/indicium/config/db.properties`:
-```properties
-db.url=jdbc:postgresql://aws-1-ap-southeast-1.pooler.supabase.com:5432/postgres
-db.username=postgres
-db.password=your_supabase_password
-```
 
 **5. Build and run**
 ```bash
